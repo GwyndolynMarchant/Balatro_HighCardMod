@@ -1,78 +1,19 @@
 --- STEAMODDED HEADER
 --- MOD_NAME: High Card Mod
 --- MOD_ID: HighCardMod
---- MOD_AUTHOR: [Kenny Stone]
+--- MOD_AUTHOR: [Kenny Stone, GwyndolynMarchant]
 --- MOD_DESCRIPTION: Create a deck that references the HighCard Franchise!
 --- BADGE_COLOUR: AF843E
 --- DISPLAY_NAME: HIGH CARD
 --- PRIORITY: -28
+--- DEPENDENCIES: [Steamodded>=1.0.0~ALPHA-1030F]
+--- VERSION: 2.0.0-alpha
 
 ----------------------------------------------
 ------------MOD CODE -------------------------
 
--- Config: DISABLE UNWANTED MODS HERE
-local xplaying_config = {
-    -- Decks
-    XPlayingDeck = true,
-    -- Jokers
-    XPlayingJoker = true,
-    -- Spade Family
-    XPlayingSpade2 = true,
-    XPlayingSpade3 = true,
-    XPlayingSpade4 = true,
-    XPlayingSpade5 = true,
-    XPlayingSpade6 = true,
-    XPlayingSpade7 = true,
-    XPlayingSpade8 = true,
-    XPlayingSpade9 = true,
-    XPlayingSpade10 = true,
-    XPlayingSpadeJ = true,
-    XPlayingSpadeQ = true,
-    XPlayingSpadeK = true,
-    XPlayingSpadeA = true,
-    -- Heart Family
-    XPlayingHeart2 = true, 
-    XPlayingHeart3 = true,
-    XPlayingHeart4 = true,
-    XPlayingHeart5 = true,
-    XPlayingHeart6 = true,
-    XPlayingHeart7 = true,
-    XPlayingHeart8 = true,
-    XPlayingHeart9 = true, 
-    XPlayingHeart10 = true,
-    XPlayingHeartJ = true,
-    XPlayingHeartQ = true,
-    XPlayingHeartK = true,
-    XPlayingHeartA = true,
-    -- Diamond Family
-    XPlayingDiamond2 = true,
-    XPlayingDiamond3 = true,
-    XPlayingDiamond4 = true,
-    XPlayingDiamond5 = true,
-    XPlayingDiamond6 = true,
-    XPlayingDiamond7 = true,
-    XPlayingDiamond8 = true,
-    XPlayingDiamond9 = true,
-    XPlayingDiamond10 = true,
-    XPlayingDiamondJ = true,
-    XPlayingDiamondQ = true,
-    XPlayingDiamondK = true,
-    XPlayingDiamondA = true,
-    -- Club Family
-    XPlayingClub2 = true,
-    XPlayingClub3 = true,
-    XPlayingClub4 = true,
-    XPlayingClub5 = true,
-    XPlayingClub6 = true,
-    XPlayingClub7 = true,
-    XPlayingClub8 = true,
-    XPlayingClub9 = true,
-    XPlayingClub10 = true,
-    XPlayingClubJ = true,
-    XPlayingClubQ = true,
-    XPlayingClubK = true,
-    XPlayingClubA = true,
-}
+local xpc, le = SMODS.load_file("config.lua")
+local xplaying_config = xpc()
 
 -- Create Jokers
 local xplaying_jokers = {}
@@ -86,13 +27,6 @@ local xplaying_jokers_info = {
 	            "into a {C:attention}X-Playing Card{} and",
 	            "activate it after scoring.",
 	        }, 
-	        --[[
-			text = {
-	            "{C:red}PLAY{} {C:attention}first hand{} of round.",
-	            "(Transform into the scoring",
-	            "X-Playing card or X-hand)"
-	        }, 
-	        ]]--
 	        card_eval = "PLAY!"
 	    },
         ability_name = "HCM X-Play",
@@ -1216,22 +1150,6 @@ function get_badge_colour(key)
     return get_badge_colour_OG(key)
 end
 
---[[
-local generate_UIBox_ability_table_OG = Card.generate_UIBox_ability_table
-function Card:generate_UIBox_ability_table()
-    local table_ui = generate_UIBox_ability_table_OG(self)
-    for k, v in pairs(table_ui) do
-    	sendInfoMessage("Found: "..k)
-	end
-	--sendInfoMessage(table_ui.card_type)
-	--if not next(table_ui.type) then sendInfoMessage("There's nothing!") end
-	--sendNestedMessage(table_ui.name)
-	sendInfoMessage("==================================================")
-	--sendNestedMessage(table_ui.main)
-    return table_ui
-end
-]]--
-
 
 local card_h_popup_OG = G.UIDEF.card_h_popup
 
@@ -1298,6 +1216,11 @@ function G.UIDEF.card_h_popup(card)
 		        	}
 		        end
 			end
+			-- tooltip {
+			--	1: { { n=G.UIT.T, config={text, color, scale } } },
+			--  2: { { n=G.UIT.T, config={text, color, scale } } }, 
+			--  name = x_playing_loc.name
+			-- }
 			tool_tip["name"] = x_playing_loc.name
 			card.ability_UIBox_table.info[#card.ability_UIBox_table.info+1] = tool_tip
 			--name
@@ -1310,6 +1233,15 @@ function G.UIDEF.card_h_popup(card)
 			if xcolour then card.ability_UIBox_table.name[#card.ability_UIBox_table.name].config.colour = xcolour end
 			--sendNestedMessage(card.ability_UIBox_table.name[#card.ability_UIBox_table.name].config.colour)
 			local xcard_name = hcm_determine_xplaying_key(card)
+
+			-- Joker info
+			local joker_tip = {}
+			for k, v in pairs(xplaying_jokers_info[xcard_name].loc.text) do
+				joker_tip[#joker_tip + 1] = { n=G.UIT.T, config={ text = v } }
+			end
+			joker_tip.name = xplaying_jokers_info[xcard_name].loc.name;
+			card.ability_UIBox_table.info[#card.ability_UIBox_table.info+1] = joker_tip
+
 			if xcard_name == "XPlayingHeartK" then 
 				sendNestedMessage(card.ability_UIBox_table.main)
 				sendInfoMessage(#card.ability_UIBox_table.main)
@@ -1710,7 +1642,8 @@ function SMODS.INIT.HighCardMod()
     --G.localization.descriptions.Other["XPlaying"] = {}
 
     -- Initialize the deck
-    if xplaying_config["XPlayingDeck"] then
+    sendInfoMessage("X-Playing card deck:" .. tostring(xplaying_config.XPlayingDeck));
+    if xplaying_config.XPlayingDeck then
         local newDeck = SMODS.Deck:new("X-Playing Deck", 
         								"XPlayingDeck", 
         								{ XPlayingDeck = true, atlas = "b_xplaying" },
@@ -1719,6 +1652,8 @@ function SMODS.INIT.HighCardMod()
         								xplaying_deck_info)
         SMODS.Sprite:new("b_xplaying", SMODS.findModByID("HighCardMod").path, "b_xplaying.png", 71, 95, "asset_atli"):register();
         newDeck:register()
+   	else
+   		sendInfoMessage("X-Playing card deck not loaded");
     end
 
     SMODS.Sprite:new("p_lowlight_normal", SMODS.findModByID("HighCardMod").path, "p_lowlight_normal.png", 71, 95, "asset_atli"):register();
@@ -1741,6 +1676,24 @@ function SMODS.INIT.HighCardMod()
 	G.localization.descriptions.Other["p_lowlight_normal"] = hcm_lowlight_loc
 	G.localization.misc.dictionary['k_cigarette_pack'] = hcm_lowlight_loc.short
 
+	-- Initialize joker rarity
+	SMODS.Rarity{
+	    key = "x_joker",
+	    loc_txt = {
+	      name = "X-Joker",
+	      text = {
+	        "Can only be obtained",
+	        "by playing an {C:attention}X-Playing card{}"
+	      } 
+	    },
+	    default_weight = 0,
+	    badge_colour = HEX("b39c59"),
+	    pools = {["Joker"] = true},
+	    get_weight = function(self, weight, object_type)
+	        return weight
+	    end,
+	}
+
     -- Initialize joker configs
     xplaying_jokers = {}
     for key, _ in pairs(xplaying_config) do
@@ -1751,7 +1704,7 @@ function SMODS.INIT.HighCardMod()
 		        ability_name = xplaying_jokers_info[key].ability_name,
 		        slug = xplaying_jokers_info[key].slug,
 		        ability = xplaying_jokers_info[key].ability,
-		        rarity = 4,
+		        rarity = "x_joker",
 		        cost = 0,
 		        unlocked = true,
 		        discovered = true,
@@ -5223,29 +5176,29 @@ function end_round()
 	end
 end
 
-local update_hand_played_OG = Game.update_hand_played
+-- local update_hand_played_OG = Game.update_hand_played
 
-function Game:update_hand_played(dt)
-	--sendInfoMessage("Update Hand Played")
-    if self.buttons then self.buttons:remove(); self.buttons = nil end
-    if self.shop then self.shop:remove(); self.shop = nil end
+-- function Game:update_hand_played(dt)
+-- 	--sendInfoMessage("Update Hand Played")
+--     if self.buttons then self.buttons:remove(); self.buttons = nil end
+--     if self.shop then self.shop:remove(); self.shop = nil end
 
-    if not G.STATE_COMPLETE then
-        G.STATE_COMPLETE = true
-        G.E_MANAGER:add_event(Event({
-            trigger = 'immediate',
-            func = function()
-        if G.GAME.chips - G.GAME.blind.chips >= 0 or G.GAME.current_round.hands_left < 1 then
-            G.STATE = G.STATES.NEW_ROUND
-        else
-            G.STATE = G.STATES.DRAW_TO_HAND
-        end
-        G.STATE_COMPLETE = false
-        return true
-        end
-        }))
-    end
-end
+--     if not G.STATE_COMPLETE then
+--         G.STATE_COMPLETE = true
+--         G.E_MANAGER:add_event(Event({
+--             trigger = 'immediate',
+--             func = function()
+--         if G.GAME.chips - G.GAME.blind.chips >= 0 or G.GAME.current_round.hands_left < 1 then
+--             G.STATE = G.STATES.NEW_ROUND
+--         else
+--             G.STATE = G.STATES.DRAW_TO_HAND
+--         end
+--         G.STATE_COMPLETE = false
+--         return true
+--         end
+--         }))
+--     end
+-- end
 
 
 local draw_from_deck_to_hand_OG = G.FUNCS.draw_from_deck_to_hand
@@ -5493,7 +5446,7 @@ function Back:trigger_effect(args)
 	        }))
 
 	        delay(0.6)
-	        sendInfoMessage("The score should be: "..(new_args.chips * new_args.mult))
+	        --sendInfoMessage("The score should be: "..(new_args.chips * new_args.mult))
 	        --return args.chips, args.mult
 			if result1 ~= nil then 
 				return result1, result2 
@@ -5501,15 +5454,11 @@ function Back:trigger_effect(args)
 	        return new_args.chips, new_args.mult
 	        
 	    end
-		sendInfoMessage("The args should be: "..new_args.chips.." / "..new_args.mult)
+		--sendInfoMessage("The args should be: "..new_args.chips.." / "..new_args.mult)
 		
 	end
 
 	return back_trigger_effect_OG(self, args)
-
-	--[[
-	
-	]]--
 	
 end
 
@@ -5843,15 +5792,6 @@ function create_UIBox_xplaying_pack()
   	}}
   	return t
 end
-
---[[
-local poll_edition_OG = poll_edition
-function poll_edition(_key, _mod, _no_neg, _guaranteed)
-	--'edi'..(key_append or '')..G.GAME.round_resets.ante
-end
-]]--
-
-
 
 -- This is an important replacement that handles a piece of faulty code in OG game
 function Card:set_edition(edition, immediate, silent)
