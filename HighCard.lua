@@ -2507,40 +2507,65 @@ function SMODS.INIT.HighCardMod()
                     end
                 end
 
+                -- Helper functions
+                function add_chips(amount)
+                	self.ability.extra.chips_gain = self.ability.extra.chips_gain + amount
+                end
+
+                function add_mult(amount)
+                	self.ability.extra.mult_gain = self.ability.extra.mult_gain + amount
+                end
+
+                function add_xmult(amount)
+                	self.ability.extra.xmult_gain = self.ability.extra.xmult_gain + amount
+                end
+
+                function compound_xmult(amount)
+                	self.ability.extra.xmult_gain = self.ability.extra.xmult_gain * amount
+                end
+
+                -- When destroying card
                 if context.destroying_card then 
                     local trigger_cnt = 1
                     if context.destroying_card.seal and context.destroying_card.seal == 'Red' then trigger_cnt = 2 end
                     --local trigger_cnt = self.ability.extra.rseal + 1
                     for i = 1, trigger_cnt do
-                        self.ability.extra.chips_gain = self.ability.extra.chips_gain + context.destroying_card.base.nominal
+
+                        -- Base card details
+                        add_chips(context.destroying_card.base.nominal + context.destroying_card.ability.perma_bonus)
 
                         -- Check enhancement
-                        if context.destroying_card.config.center == G.P_CENTERS.m_stone then 
-                            self.ability.extra.chips_gain = self.ability.extra.chips_gain + 50
-                        elseif context.destroying_card.config.center == G.P_CENTERS.m_bonus then
-                            self.ability.extra.chips_gain = self.ability.extra.chips_gain + 30
-                        elseif context.destroying_card.config.center == G.P_CENTERS.m_mult then
-                            self.ability.extra.mult_gain = self.ability.extra.mult_gain + 4
+                        if     context.destroying_card.config.center == G.P_CENTERS.m_stone then add_chips(G.P_CENTERS.m_stone.config.bonus)
+                        elseif context.destroying_card.config.center == G.P_CENTERS.m_bonus then add_chips(G.P_CENTERS.m_bonus.config.bonus)
+                        elseif context.destroying_card.config.center == G.P_CENTERS.m_mult  then add_mult(G.P_CENTERS.m_mult.config.mult)
                         elseif context.destroying_card.config.center == G.P_CENTERS.m_glass then
                             self.ability.extra.glass_cnt = self.ability.extra.glass_cnt + 1
-                            self.ability.extra.xmult_gain = self.ability.extra.xmult_gain + 2
-                        elseif context.destroying_card.config.center == G.P_CENTERS.m_steel then
-                            self.ability.extra.xmult_gain = self.ability.extra.xmult_gain + 1.5
+                            add_xmult(G.P_CENTERS.m_glass.config.Xmult)
+                        elseif context.destroying_card.config.center == G.P_CENTERS.m_steel then compound_xmult(G.P_CENTERS.m_steel.config.h_x_mult)
                         elseif context.destroying_card.config.center == G.P_CENTERS.m_gold then
                             self.ability.extra.gold_cnt = self.ability.extra.gold_cnt + 1 
                         elseif context.destroying_card.config.center == G.P_CENTERS.m_lucky then
                             self.ability.extra.lucky_cnt = self.ability.extra.lucky_cnt + 1 
+                        -- TODO: Check Ceres
+                        -- -- TODO: Ceres.Sketch
+                        -- -- TODO: Ceres.Postcard
+                        -- -- TODO: Ceres.Platinum
+                        -- -- TODO: Ceres.Stained_glass
                         end
+
                         -- Check editions
                         if context.destroying_card.edition then
-                            if context.destroying_card.edition.holo then 
-                                self.ability.extra.mult_gain = self.ability.extra.mult_gain + 10
-                            elseif context.destroying_card.edition.foil then 
-                                self.ability.extra.chips_gain = self.ability.extra.chips_gain + 50
-                            elseif context.destroying_card.edition.polychrome then
-                                self.ability.extra.xmult_gain = self.ability.extra.xmult_gain * 1.5
+                            if     context.destroying_card.edition.holo       then add_mult(G.P_CENTERS.e_holo.config.extra)
+                            elseif context.destroying_card.edition.foil       then add_chips(G.P_CENTERS.e_foil.config.extra)
+                            elseif context.destroying_card.edition.polychrome then compound_xmult(G.P_CENTERS.e_polychrome.config.extra)
+                            -- TODO: Ceres.Colorblind
+                            -- TODO: Ceres.Sneaky
+                            -- TODO: Ceres.Mint
+                            -- TODO: Bunco.Glitter (bunc_glitter) -> .config.Xchips
+                            -- TODO: Bunco.Fluorescent (bunc_fluorescent)
                             end
                         end
+
                         -- Check seal
                         if context.destroying_card.seal then 
                             if context.destroying_card.seal == 'Gold' then 
@@ -2549,6 +2574,7 @@ function SMODS.INIT.HighCardMod()
                                 self.ability.extra.rseal = self.ability.extra.rseal + 1
                             elseif context.destroying_card.seal == 'Blue' then
                                 self.ability.extra.bseal = self.ability.extra.bseal + 1
+                            -- TODO: Ceres.Green (cere_green_seal)
                             end
                         end
                     end
@@ -2563,13 +2589,13 @@ function SMODS.INIT.HighCardMod()
                     local lucky_multi = 0
                     if self.ability.extra.lucky_cnt > 0 then
                         for i = 1, self.ability.extra.lucky_cnt do
-                            if pseudorandom('lucky_mult') < G.GAME.probabilities.normal / 5 then
+                            if pseudorandom('lucky_mult') < G.GAME.probabilities.normal / 5 then -- TODO: Find dynamic reference for odds
                                 card_eval_status_text(self, 'extra', nil, nil, nil, {message = G.localization.descriptions["Joker"]["j_hcm_reapers_hand"]["card_eval_lm"], Xmult_mod=1})
                                 lucky_multi = lucky_multi + 1
                             end
-                            if pseudorandom('lucky_money') < G.GAME.probabilities.normal / 15 then
+                            if pseudorandom('lucky_money') < G.GAME.probabilities.normal / 15 then -- TODO: Find dynamic reference for odds
                                 card_eval_status_text(self, 'extra', nil, nil, nil, {message = G.localization.descriptions["Joker"]["j_hcm_reapers_hand"]["card_eval_ld"], Xmult_mod=1})
-                                ease_dollars(20)
+                                ease_dollars(G.P_CENTERS.m_lucky.config.p_dollars)
                                 delay(0.3)
                             end
                         end
@@ -2580,7 +2606,7 @@ function SMODS.INIT.HighCardMod()
                                 if self.ability.extra.glass_cnt > 0 then
                                     local glass_shattered = 0
                                     for i = 1, self.ability.extra.glass_cnt do
-                                        if pseudorandom('glass') < G.GAME.probabilities.normal / 4 then
+                                        if pseudorandom('glass') < G.GAME.probabilities.normal / G.P_CENTERS.m_glass.config.extra then
                                             card_eval_status_text(self, 'extra', nil, nil, nil, {message = G.localization.descriptions["Joker"]["j_hcm_reapers_hand"]["card_eval_st"]})
                                             glass_shattered = glass_shattered + 1
                                         end
@@ -2596,7 +2622,7 @@ function SMODS.INIT.HighCardMod()
                     return {
                         message = G.localization.descriptions["Joker"]["j_hcm_reapers_hand"]["card_eval_jk"],
                         chip_mod = self.ability.extra.chips_gain,
-                        mult_mod = self.ability.extra.mult_gain + lucky_multi * 20,
+                        mult_mod = self.ability.extra.mult_gain + lucky_multi * G.P_CENTERS.m_lucky.config.mult,
                         Xmult_mod = self.ability.extra.xmult_gain,
                         card = self
                     }
