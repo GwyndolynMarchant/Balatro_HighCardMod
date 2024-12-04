@@ -33,6 +33,32 @@ local hcm_flamed = false
 local hcm_has_sq = false 
 local hcm_sq = nil
 
+-- Reaper Deck
+SMODS.Back{
+	name = "Reaper's Deck",
+	key = "reaper",
+	pos = {x = 0, y = 0},
+	atlas = "b_xplaying",
+	loc_txt = {
+		name ="Reaper's Deck",
+		text={
+			"Start with a Deck",
+			"full of {C:attention}Reaper's Hand{}",
+		},
+    },
+	apply = function(self)
+		G.E_MANAGER:add_event(Event({
+			func = function()
+                for _, card in ipairs(G.playing_cards) do
+					card:set_base(G.P_CARDS["C_K"])
+					card:set_x_playing(hcm_determine_xplaying_key(card))
+				end
+				return true
+			end
+		}))
+	end
+}
+
 local x_sprite_info = {
 	-- Spade Family
 	XPlayingSpade2 = {name = "Neo New Nambu", pos = {x=0,y=0}, atlas = "m_hcm_neo_new_nambu"},
