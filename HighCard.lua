@@ -12,52 +12,28 @@
 ----------------------------------------------
 ------------MOD CODE -------------------------
 
-local xpc, le1 = SMODS.load_file("config.lua")
+-- Load mod config
+local xpc, _ = SMODS.load_file("config.lua")
 local xplaying_config = xpc()
 
 -- Create Jokers
 local xplaying_jokers = {}
 
-local xji, le2 = SMODS.load_file("jokers_info.lua")
+-- Load info for all Jokers
+local xji, _ = SMODS.load_file("src/Jokers_info.lua")
 local xplaying_jokers_info = xji()
-local xplaying_deck_info = {name = "X-Playing Deck",
-					        text = {
-					            "Start run as a {C:red}Player{}",
-					            "(i.e. Start with {C:attention}52{}",
-					            "{C:attention}X-Playing Cards{} and",
-					            "the {C:attention}X-Playing Joker{})"
-					        }}
+
+-- Load backs
+local xjb, _ = SMODS.load_file("src/Backs.lua")
+xjb()
 
 local faceless_trigger = true
 local hcm_flamed = false
 local hcm_has_sq = false 
 local hcm_sq = nil
 
--- Reaper Deck
-SMODS.Back{
-	name = "Reaper's Deck",
-	key = "reaper",
-	pos = {x = 0, y = 0},
-	atlas = "b_xplaying",
-	loc_txt = {
-		name ="Reaper's Deck",
-		text={
-			"Start with a Deck",
-			"full of {C:attention}Reaper's Hand{}",
-		},
-    },
-	apply = function(self)
-		G.E_MANAGER:add_event(Event({
-			func = function()
-                for _, card in ipairs(G.playing_cards) do
-					card:set_base(G.P_CARDS["C_K"])
-					card:set_x_playing(hcm_determine_xplaying_key(card))
-				end
-				return true
-			end
-		}))
-	end
-}
+-- Load backs
+SMODS.load_file("src/Backs.lua")
 
 local x_sprite_info = {
 	-- Spade Family
@@ -764,21 +740,6 @@ function SMODS.INIT.HighCardMod()
     init_localization()
     G.localization.misc["labels"]["xplaying"] = x_playing_loc.name
     --G.localization.descriptions.Other["XPlaying"] = {}
-
-    -- Initialize the deck
-    sendInfoMessage("X-Playing card deck:" .. tostring(xplaying_config.XPlayingDeck));
-    if xplaying_config.XPlayingDeck then
-        local newDeck = SMODS.Deck:new("X-Playing Deck", 
-        								"XPlayingDeck", 
-        								{ XPlayingDeck = true, atlas = "b_xplaying" },
-        								--G.cardback_info["xplaying"], 
-        								{x = 0, y = 0},
-        								xplaying_deck_info)
-        SMODS.Sprite:new("b_xplaying", SMODS.findModByID("HighCardMod").path, "b_xplaying.png", 71, 95, "asset_atli"):register();
-        newDeck:register()
-   	else
-   		sendInfoMessage("X-Playing card deck not loaded");
-    end
 
     SMODS.Sprite:new("p_lowlight_normal", SMODS.findModByID("HighCardMod").path, "p_lowlight_normal.png", 71, 95, "asset_atli"):register();
     -- Initialize the booster packs
