@@ -326,11 +326,11 @@ function G.UIDEF.card_h_popup(card)
 
 			-- Joker info
 			local joker_tip = {}
-			for i = 1, #xplaying_jokers_info[xcard_name].loc.text do
+			for i = 1, #xplaying_jokers_info[xcard_name].loc.summary do
 				joker_tip[#joker_tip + 1] = { { 
 					n=G.UIT.T, 
 					config={
-						text = xplaying_jokers_info[xcard_name].loc.text[i],
+						text = xplaying_jokers_info[xcard_name].loc.summary[i],
 						colour = hcm_colour,
 						scale = 0.32*G.LANG.font.DESCSCALE
 					}

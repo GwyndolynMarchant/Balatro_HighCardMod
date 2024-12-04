@@ -25,6 +25,10 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"Refund hands of five, but lose all", 
+	        	"discards and reduce hand size to six."
+	        },
 	        card_eval = "Neo New Nambu!"
 	    },
         ability_name = "HCM Neo New Nambu",
@@ -43,6 +47,10 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"Three of a Kind with three suits", 
+	        	"becomes Four of a Kind with four suits."
+	        },
 	        card_eval = "Extend!"
 	    },
         ability_name = "HCM Staff Master",
@@ -58,6 +66,10 @@ return {
 	            "this card gives {X:mult,C:white}X#3#{} Mult. ",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Score four of a five card play",
+	        	"and get four times mult."
 	        },
 	        card_eval = "Clear Lance!"
 	    },
@@ -77,6 +89,9 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"Play escalating ranks for escalating mult."
+	        },
 	        card_eval = "Brain Buster!"
 	    },
         ability_name = "HCM Brain Buster",
@@ -94,6 +109,10 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"Plays your lowest card held in",
+	        	"hand in addition to what you play."
+	        },
 	        card_eval = "Fire!"
 	    },
         ability_name = "HCM Juggling Gun",
@@ -110,6 +129,10 @@ return {
 	            "scoring cards afterwards.",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Every scoring cards gains",
+	        	"a temporary enhancement."
 	        },
 	        card_eval_on = "Interceptor On!",
 	        card_eval_off = "Interceptor Off!"
@@ -129,6 +152,10 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        }, 
+	        summary = {
+	        	"Destroys first played and matching",
+	        	"-suit cards played in return for mult."
+	        },
 	        card_eval_pc = "Place Bomb..",
 	        card_eval_jk = "All Kaboom!"
 	    },
@@ -146,6 +173,9 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"Remove debuff from played cards."
+	        },
 	        card_eval = "Bokka!"
 	    },
         ability_name = "HCM Bokka",
@@ -161,6 +191,10 @@ return {
 	            "{C:attention}after the scoring stage{}. ",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Turn all scored cards into",
+	        	"a random scored card."
 	        },
 	        card_eval = "Honest Straight!",
 	        card_eval_pc = "HIT!"
@@ -180,6 +214,10 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"Play your most-played hand",
+	        	"to gain escalating mult."
+	        },
 	        card_eval = "Marine Hunter!",
 	    },
         ability_name = "HCM Marine Hunter",
@@ -194,6 +232,9 @@ return {
 	            "{C:attention}replay{} that hand with {X:mult,C:white}X#1#{}.",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Replay each hand with half mult."
 	        },
 	        card_eval = "Typhoid Mary!",
 	    },
@@ -212,6 +253,12 @@ return {
 	            "all its replicas. Gain {X:mult,C:white}X#1#{} per card",
 	            "consumed. {C:inactive}(Currently gives{} {X:mult,C:white}X#2#{} {C:inactive}){}",
 	            "{C:red}Warning: This card has a mind of its own!{}"
+	        },
+	        summary = {
+	        	"Devours X-Playing Cards and disables",
+	        	"their abilities permanently. Gain",
+	        	"multiplier mult in return.",
+	        	"WARNING: This card has a a mind of its own!"
 	        },
 	        card_eval_default = "Kneel before San Galgano!",
 	        card_eval_awaken = "I AM AWAKENED!",
@@ -244,6 +291,10 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"Give bonus chips and mult,",
+	        	"but force a card in each hand."
+	        },
 	        card_eval = "Love & Peace!"
 	    },
         ability_name = "HCM Love and Peace",
@@ -260,6 +311,10 @@ return {
 	            "forming a better poker hand. ",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Cards will be considered one rank",
+	        	"lower if it forms a better hand."
 	        }
 	    },
         ability_name = "HCM Jelly Crawler",
@@ -276,6 +331,11 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"Turns your first scoring card",
+	        	"into Stone, then retriggers",
+	        	"two times."
+	        },
 	        card_eval = "Rockin' Rocks!"
 	    },
         ability_name = "HCM Rockin Rocks",
@@ -291,6 +351,10 @@ return {
 	            "scoring for {C:attention}#1# times{}.",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Retrigger lowest scoring",
+	        	"card four times."
 	        },
 	        card_eval = "Agent S!"
 	    },
@@ -309,6 +373,10 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"Discard as much as you want,",
+	        	"but only play one hand."
+	        },
 	        card_eval = "Calorie's High!"
 	    },
         ability_name = "HCM Calories High",
@@ -325,6 +393,10 @@ return {
 	            "if they are of the same {C:attention}rank{}.",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Transform scored cards to",
+	        	"leftmost-card if they share rank."
 	        },
 	        card_eval = "The Zoo!",
 	        card_eval_pc = "HIT!"
@@ -343,6 +415,10 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"Convert suit of all played",
+	        	"cards to one suit amongst them."
+	        },
 	        card_eval = "Chameleon!"
 	    },
         ability_name = "HCM Chameleon",
@@ -358,6 +434,9 @@ return {
 	            "if it's higher, decrease it by 1. ",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Pushes rank of High Card towards eight."
 	        },
 	        card_eval = "Mun!"
 	    },
@@ -375,6 +454,10 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"Gain a tarot card for beating",
+	        	"the round in one hand."
+	        },
 	        card_eval = "Marvelous Genius!"
 	    },
         ability_name = "HCM Marvelous Genius",
@@ -391,6 +474,10 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"Treat single-card hands",
+	        	"as Five of a Kind."
+	        },
 	        card_eval = "Common Destiny!"
 	    },
         ability_name = "HCM Common Destiny",
@@ -406,6 +493,11 @@ return {
 	            "give a corresponding {C:planet}Planet{} card.",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Gain Planet card for playing",
+	        	"highest hand that is not",
+	        	"a High Card."
 	        },
 	        card_eval = "Sky Dancer!"
 	    },
@@ -424,6 +516,10 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"You have one minute to win",
+	        	"and times-twelve mult."
+	        },
 	        card_eval = "Sonic Move!"
 	    },
         ability_name = "HCM Sonic Move",
@@ -440,6 +536,11 @@ return {
 	            "{C:inactive}(Now gives {}{C:chips}+#3#{} chips, {C:mult}+#4#{} mult{C:inactive}){}",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Devour face cards to",
+	        	"permanently increase mult",
+	        	"of this joker and card."
 	        },
 	        card_eval = "Masculine Parfait!"
 	    },
@@ -459,6 +560,11 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"Play four or less cards",
+	        	"and score a temporary card",
+	        	"that upgrades the hand."
+	        },
 	        card_eval = "Faceless!"
 	    },
         ability_name = "HCM Faceless",
@@ -477,6 +583,10 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"Poker hand is always",
+	        	"considered to contain a pair."
+	        },
 	        card_eval = "Love Connection!"
 	    },
         ability_name = "HCM Love Connection",
@@ -491,6 +601,9 @@ return {
 	            "into {C:attention}Glass Card{}.",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Turn scoring cards to glass."
 	        },
 	        card_eval = "Marble Rumble!"
 	    },
@@ -507,6 +620,11 @@ return {
 	            "and this helps to form {C:attention}Flush{}.",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Play four cards and add a",
+	        	"Wildcard rank four card to",
+	        	"hand if it would make a Flush."
 	        },
 	        card_eval = "Musical Alchemist!"
 	    },
@@ -525,6 +643,10 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"Escalate scored poker",
+	        	"hand to upgrade its level."
+	        },
 	        card_eval = "Evolve!"
 	    },
         ability_name = "HCM Greatest Man",
@@ -540,6 +662,10 @@ return {
 	            "{C:attention}-#2# Ante{}. {C:inactive}({}{C:red}#3#{} {C:inactive}cards scored){}",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Score thirteen cards",
+	        	"to reduce ante by one."
 	        },
 	        card_eval = "13 Stairs!"
 	    },
@@ -558,6 +684,10 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"Drain money to increase",
+	        	"mult and chips."
+	        },
 	        card_eval_on = "Never No Dollars!",
 	        card_eval_off = "No Dollar :("
 	    },
@@ -575,6 +705,9 @@ return {
 	            "{C:attention}the same type{} if you have dollars.",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Reroll consumables for cash."
 	        },
 	        card_eval = "Red Labyrinth!"
 	    },
@@ -595,6 +728,11 @@ return {
 	            --"Otherwise, you {C:red}lose the game instantly{}.",
 	            "This X-Playing card is {C:attention}eternal{}."
 	        },
+	        summary = {
+	        	"Play five cards with no",
+	        	"repeating ranks to",
+	        	"accumulate mult."
+	        },
 	        card_eval = "No Mercy!",
 	        card_eval_mercy = "Absorb.."
 	    },
@@ -611,6 +749,10 @@ return {
 	            "during the scoring stage.",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Always trigger",
+	        	"all propbabilities."
 	        },
 	        card_eval = "Unlucky Poky!"
 	    },
@@ -629,6 +771,10 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"High Card poker hands become",
+	        	"next most-played poker hand."
+	        },
 	        card_eval = "Out of Five!"
 	    },
         ability_name = "HCM Out of Five",
@@ -645,6 +791,9 @@ return {
 	            "{C:attention}of which they will be drawn.{}",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Scry deck."
 	        },
 	        card_eval = "Balor Vision",
 	        card_explained = "Cards will be drawn from left to right!"
@@ -664,6 +813,10 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"Score five cards to",
+	        	"balance chips and mult."
+	        },
 	        card_eval = "Round & Round!"
 	    },
         ability_name = "HCM Round and Round",
@@ -680,6 +833,11 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"Play a single card",
+	        	"to retrigger it",
+	        	"five times."
+	        },
 	        card_eval = "Dynamic Kinesis!"
 	    },
         ability_name = "HCM Dynamic Kinesis",
@@ -694,6 +852,11 @@ return {
 	            "{C:attention}Gold Card{} played when scored.",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Steel and gold cards provide",
+	        	"one-point-five-times mult",
+	        	"when scored."
 	        },
 	        card_eval = "Metallical Parade!",
 	        card_eval_pc = "Metal!",
@@ -712,6 +875,10 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"All poker hands are",
+	        	"considered Straight."
+	        },
 	        card_eval = "Green Green!"
 	    },
         ability_name = "HCM Green Green",
@@ -727,6 +894,10 @@ return {
 	            "{C:attention}discard{} or {C:attention}held at end of round{}.",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Gold, Blue, and Purple seals",
+	        	"trigger on scoring."
 	        },
 	        card_eval = "Wing Wind!"
 	    },
@@ -744,6 +915,10 @@ return {
 	            "{C:inactive}(Currently{} {C:mult}+#2#{} {C:inactive}Mult){}",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Devour Stone cards for",
+	        	"temporary mult."
 	        },
 	        card_eval_pc = "Stomp!",
 	        card_eval_jk = "G Round!"
@@ -763,6 +938,11 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"The median scoring cards",
+	        	"of every hand permanently",
+	        	"gain chips."
+	        },
 	        card_eval = "Vortex!"
 	    },
         ability_name = "HCM Eye of the Storm",
@@ -779,6 +959,10 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"Light the fire",
+	        	"to gain Spectrals."
+	        },
 	        card_eval = "PLAY FOR THE FIRE!"
 	    },
         ability_name = "HCM Lethal Scoville",
@@ -794,6 +978,10 @@ return {
 	            "{C:attention}base{} {C:chips}chips{} to {C:mult}mult{} instead.",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Non-scoring cards when played",
+	        	"add their chips to mult."
 	        },
 	        card_eval_pc = "Shadow..",
 	        card_eval_jk = "Sinking Shadow!"
@@ -812,6 +1000,11 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"All poker hands are",
+	        	"considered to have been",
+	        	"played three times."
+	        },
 	        card_eval = "Chlorophyll Overgrown"
 	    },
         ability_name = "HCM Chlorophyll Overgrown",
@@ -827,6 +1020,10 @@ return {
 	            "{C:red}(Only for {}{C:attention}enhancement{} {C:red}effects){}",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Steel and Gold cards act",
+	        	"as eachother in addition."
 	        },
 	        card_eval_pc = "Conductive!",
 	        card_eval_jk = "Million Volt!"
@@ -846,6 +1043,11 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"Play and discard both",
+	        	"draw cards to make your",
+	        	"most-played hand."
+	        },
 	        card_eval = "Coming Home!"
 	    },
         ability_name = "HCM Coming Home",
@@ -862,6 +1064,9 @@ return {
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
+	        summary = {
+	        	"All cards return to the deck."
+	        },
 	        card_eval = "Punker Viper!"
 	    },
         ability_name = "HCM Punker Viper",
@@ -873,11 +1078,16 @@ return {
 	        name = "Reaper's Hand",
 	        text = {
 	            "After playing a hand, destroy",
-	            "all scoring cards and gain their",
+	            "all scoring cards and gain their base",
 	            "{C:chips}chips{}, {C:mult}mult{} and {C:attention}enhancement{}.",
 	            "{C:inactive}({}{C:chips}+#1#{} chips, {C:mult}+#2#{} mult, {X:mult,C:white}X#3#{} mult",
 	            "and {C:attention}+#4#{} gold at end of round{C:inactive}){}",
 	            "This X-Playing card is {C:attention}eternal{}."
+	        },
+	        summary = {
+	        	"Devour cards to permanently",
+	        	"gain their modifiers. This",
+	        	"X-Playing card is eternal."
 	        },
 	        card_eval_lm = "Lucky Mult!",
 	        card_eval_ld = "Lucky Dollars!",
@@ -902,6 +1112,11 @@ return {
 	            "with that enhancement to your hand.",
 	            "When round ends, transform",
 	            "back to the {C:attention}X-Playing Card{}."
+	        },
+	        summary = {
+	        	"Scoring five cards with matching",
+	        	"enhancement adds a matching",
+	        	"Ace of Clubs to your hand."
 	        },
 	        card_eval = "Life Binder!",
 	        card_eval_pc = "Create!"
