@@ -1098,7 +1098,7 @@ return {
         ability_name = "HCM Reapers Hand",
         slug = "hcm_reapers_hand",
         ability = { extra = { chips_gain = 0, mult_gain = 0, xmult_gain = 1,
-                            steel_cnt = 0, gold_cnt = 0, lucky_cnt = 0,
+                            steel_cnt = 0, gold_payout = 0, lucky_cnt = 0,
                             glass_cnt = 0, gseal = 0, rseal = 0, bseal = 0,
                     done = false} }
     },

@@ -2492,37 +2492,24 @@ function SMODS.INIT.HighCardMod()
     	SMODS.Jokers.j_hcm_reapers_hand.yes_pool_flag = 'X-Playing Card'
         function SMODS.Jokers.j_hcm_reapers_hand.loc_def(card)
             return { card.ability.extra.chips_gain, card.ability.extra.mult_gain, card.ability.extra.xmult_gain, 
-                     card.ability.extra.gold_cnt * 3}
+                     card.ability.extra.gold_payout }
         end
         SMODS.Jokers.j_hcm_reapers_hand.calculate = function(self, context)
             if not context.blueprint then
                 if context.end_of_round and not self.ability.extra.done then
                     --end_xplay("XPlayingClubK")
                     self.ability.extra.done = true
-                    if self.ability.extra.gold_cnt > 0 then 
-                        for i = 1, self.ability.extra.gold_cnt do
-                            ease_dollars(3)
-                            delay(0.3)
-                        end
+                    if self.ability.extra.gold_payout and self.ability.extra.gold_payout > 0 then 
+                        ease_dollars(self.ability.extra.gold_payout)
                     end
                 end
 
                 -- Helper functions
-                function add_chips(amount)
-                	self.ability.extra.chips_gain = self.ability.extra.chips_gain + amount
-                end
-
-                function add_mult(amount)
-                	self.ability.extra.mult_gain = self.ability.extra.mult_gain + amount
-                end
-
-                function add_xmult(amount)
-                	self.ability.extra.xmult_gain = self.ability.extra.xmult_gain + amount
-                end
-
-                function compound_xmult(amount)
-                	self.ability.extra.xmult_gain = self.ability.extra.xmult_gain * amount
-                end
+                function add_chips(amount) self.ability.extra.chips_gain = self.ability.extra.chips_gain + amount end
+                function add_mult(amount) self.ability.extra.mult_gain = self.ability.extra.mult_gain + amount end
+                function add_xmult(amount) self.ability.extra.xmult_gain = self.ability.extra.xmult_gain + amount end
+                function compound_xmult(amount) self.ability.extra.xmult_gain = self.ability.extra.xmult_gain * amount end
+                function add_gold(amount) self.ability.extra.gold_payout = self.ability.extra.gold_payout + amount end
 
                 -- When destroying card
                 if context.destroying_card then 
@@ -2542,15 +2529,38 @@ function SMODS.INIT.HighCardMod()
                             self.ability.extra.glass_cnt = self.ability.extra.glass_cnt + 1
                             add_xmult(G.P_CENTERS.m_glass.config.Xmult)
                         elseif context.destroying_card.config.center == G.P_CENTERS.m_steel then compound_xmult(G.P_CENTERS.m_steel.config.h_x_mult)
-                        elseif context.destroying_card.config.center == G.P_CENTERS.m_gold then
-                            self.ability.extra.gold_cnt = self.ability.extra.gold_cnt + 1 
+                        elseif context.destroying_card.config.center == G.P_CENTERS.m_gold then add_gold(G.P_CENTERS.m_gold.config.h_dollars)
                         elseif context.destroying_card.config.center == G.P_CENTERS.m_lucky then
                             self.ability.extra.lucky_cnt = self.ability.extra.lucky_cnt + 1 
-                        -- TODO: Check Ceres
-                        -- -- TODO: Ceres.Sketch
-                        -- -- TODO: Ceres.Postcard
-                        -- -- TODO: Ceres.Platinum
-                        -- -- TODO: Ceres.Stained_glass
+                        elseif Ceres and Ceres.config and Ceres.config.enhancements.enabled then
+							-- TODO: Ceres.Sketch
+                        	-- TODO: Ceres.Postcard
+                        	-- TODO: Ceres.Platinum
+                        	-- TODO: Ceres.Stained_glass
+                        -- TODO: Check Familiar
+                        -- -- TODO: Familiar.Charmed
+                        -- -- TODO: Familiar.Div
+                        -- -- TODO: Familiar.Gilded
+                        -- -- TODO: Familiar.Penalty
+						-- TODO: JellyMod
+						-- -- TODO: Jelly.m_bonus_rev
+						-- -- TODO: Jelly.m_mult_rev
+						-- -- TODO: Jelly.m_brass
+						-- -- TODO: Jelly.m_fools_gold
+						-- -- TODO: Jelly.m_blank
+						-- -- TODO: Jelly.m_unlucky
+						-- -- TODO: Jelly.m_wooden
+						-- -- TODO: Jelly.m_coal
+						-- TODO: Komakusa > Komakusa.ofuda
+						-- TODO: Ortalab
+						-- -- TODO: Ortalab.post
+						-- -- TODO: Ortalab.bent
+						-- -- TODO: Ortalab.index
+						-- -- TODO: Ortalab.sand
+						-- -- TODO: Ortalab.rusty
+						-- -- TODO: Ortalab.ore
+						-- -- TODO: Ortalab.iou
+						-- -- TODO: Ortalab.recycled
                         end
 
                         -- Check editions
@@ -2575,6 +2585,10 @@ function SMODS.INIT.HighCardMod()
                             elseif context.destroying_card.seal == 'Blue' then
                                 self.ability.extra.bseal = self.ability.extra.bseal + 1
                             -- TODO: Ceres.Green (cere_green_seal)
+                            -- TODO: Familiar.Familiar
+                            -- TODO: Familiar.Gilded
+                            -- TODO: Familiar.Maroon
+                            -- TODO: Familiar.Sapphire
                             end
                         end
                     end
