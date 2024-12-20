@@ -475,8 +475,8 @@ return {
 	            "back to the {C:attention}X-Playing Card{}."
 	        },
 	        summary = {
-	        	"Treat single-card hands",
-	        	"as Five of a Kind."
+	        	"Treat hands with five scoring",
+	        	"cards as Five of a Kind."
 	        },
 	        card_eval = "Common Destiny!"
 	    },
