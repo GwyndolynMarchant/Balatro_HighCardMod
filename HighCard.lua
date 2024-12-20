@@ -12,6 +12,8 @@
 ----------------------------------------------
 ------------MOD CODE -------------------------
 
+local debugging = false;
+
 -- Load mod config
 local xpc, _ = SMODS.load_file("config.lua")
 local xplaying_config = xpc()
@@ -95,7 +97,6 @@ local x_sprite_info = {
 }
 
 local hcm_colour = {0.68627450980392, 0.51764705882353, 0.24313725490196, 1}
-
 
 local hcm_colour_mult = {0.99607843137255, 0.37254901960784, 0.33333333333333, 1}
 
@@ -253,15 +254,15 @@ function G.UIDEF.card_h_popup(card)
 	if card.ability and card.ability.set == "Booster" then 
 		sendInfoMessage("Booster!") 
 		for k, v in pairs(card.ability) do 
-			sendInfoMessage("Ability: "..k)
+			if debugging then sendInfoMessage("Ability: "..k) end
 		end
-		sendInfoMessage(card.ability.name)
+		if debugging then sendInfoMessage(card.ability.name) end
 
 		if card.ability.name == "Low Light Cigarette Pack" then
 
 			if card.ability_UIBox_table and 
 			   card.ability_UIBox_table.name then
-			   	sendInfoMessage("Changed!")
+			   	if debugging then sendInfoMessage("Changed!") end
 			   	card.ability_UIBox_table.name = localize{type = 'name', set = 'Other', key = "p_lowlight_normal", nodes = card.ability_UIBox_table.name}
 			   	--card.ability_UIBox_table.name[1].config.object.string = hcm_lowlight_loc.name
 			   	
@@ -283,7 +284,7 @@ function G.UIDEF.card_h_popup(card)
 			        end
 			        card.ability_UIBox_table.main = new_main
 				end
-				sendInfoMessage("main changed!")
+				if debugging then sendInfoMessage("main changed!") end
 			end
 		end
 	end
@@ -344,7 +345,7 @@ function G.UIDEF.card_h_popup(card)
 
 			if xcard_name == "XPlayingHeartK" then 
 				sendNestedMessage(card.ability_UIBox_table.main)
-				sendInfoMessage(#card.ability_UIBox_table.main)
+				if debugging then sendInfoMessage(#card.ability_UIBox_table.main) end
 				if card.ability and card.ability.perma_mult and not card.debuff then
 					local extra_mult = hcm_deep_cpy(card.ability_UIBox_table.main[1])
 					if next(extra_mult) then
@@ -408,11 +409,11 @@ end
 function Card:set_x_playing(hand_name)
 	-- Front:
     if self.children.front then
-    	--sendInfoMessage("Hits Front")
+    	--if debugging then sendInfoMessage("Hits Front") end
         self.children.front.atlas = G.ASSET_ATLAS[x_sprite_info[hand_name].atlas]
         self.children.front:set_sprite_pos(x_sprite_info[hand_name].pos)
     else
-    	--sendInfoMessage("Didn't hit front")
+    	--if debugging then sendInfoMessage("Didn't hit front") end
         self.children.front = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[x_sprite_info[hand_name].atlas], x_sprite_info[hand_name].pos)
         self.children.front.states.hover = self.states.hover
         self.children.front.states.click = self.states.click
@@ -461,7 +462,7 @@ function xplay(hand_name, card_info)
 	local num_disabled = 0
 	if G.GAME.hcm_disabled then
 		if G.GAME.hcm_disabled[hand_name] then 
-			sendInfoMessage("X Play Disabled!")
+			if debugging then sendInfoMessage("X Play Disabled!") end
 			return true
 		end 
 		for k, v in pairs(G.GAME.hcm_disabled) do 
@@ -621,7 +622,7 @@ function end_xplay(hand_name)
 		    joker_to_destroy.getting_sliced = true
 		    G.E_MANAGER:add_event(Event({
 	        	func = function() 
-			    	--sendInfoMessage("found "..G.GAME.hcm_held.base.suit..G.GAME.hcm_held:get_id())
+			    	--if debugging then sendInfoMessage("found "..G.GAME.hcm_held.base.suit..G.GAME.hcm_held:get_id()) end
 			    	if G.GAME.hcm_held then
 				    	local held_card = G.GAME.hcm_held
 				    	G.jokers:remove_card(joker_to_destroy)
@@ -643,7 +644,7 @@ function end_xplay(hand_name)
 					    }))
 						G.E_MANAGER:add_event(Event({
 					        func = function()
-					        	sendInfoMessage("thrown to deck")
+					        	if debugging then sendInfoMessage("thrown to deck") end
 					        	G.jokers:remove_card(held_card)
 					        	if held_card.xability and held_card.xability.handname == "XPlayingSpadeK" then 
 									if G.GAME.hcm_san_galgano == nil then return true end
@@ -833,7 +834,7 @@ function SMODS.INIT.HighCardMod()
                 	if G.GAME.current_round.hands_played == 0 then
                         if context.scoring_name == "High Card" then
                         	local highcard = nil
-                        	for k, v in ipairs(context.scoring_hand) do
+                        	for _, v in ipairs(context.scoring_hand) do
 								if v.config.center == G.P_CENTERS.m_stone then
 								else highcard = v end
 							end 
@@ -883,9 +884,7 @@ function SMODS.INIT.HighCardMod()
                     self.ability.extra.done = true
                 end
 
-                if SMODS.end_calculate_context(context) then
-                    self.ability.extra.done = false
-                end
+                self.ability.extra.done = not SMODS.end_calculate_context(context)
             end
         end
     end
@@ -1169,7 +1168,7 @@ function SMODS.INIT.HighCardMod()
 					for k, v in ipairs(context.full_hand) do
 						table.insert(self.ability.extra.highlighted_cards, v)
 					end
-					sendInfoMessage(#self.ability.extra.highlighted_cards)
+					if debugging then sendInfoMessage(#self.ability.extra.highlighted_cards) end
                 	if self.ability.extra.bonus_hand then 
                 		self.ability.extra.bonus_hand = false 
                 		return{
@@ -1271,14 +1270,14 @@ function SMODS.INIT.HighCardMod()
                 	end
                 	--[[
 					if context.scoring_hand[1]:get_id() == 13 and context.scoring_hand[1].base.suit == "Spades" then
-                    	sendInfoMessage("Trying to set ability")
+                    	if debugging then sendInfoMessage("Trying to set ability") end
                     	G.E_MANAGER:add_event(Event({
 				            func = function()
 				                context.scoring_hand[1]:set_x_playing("XPlayingSpadeK")
 				                return true
 				            end
 				        })) 
-                    	sendInfoMessage("Ability set")
+                    	if debugging then sendInfoMessage("Ability set") end
                     end
                 	]]--
                 	local consumed = 0
@@ -1422,7 +1421,7 @@ function SMODS.INIT.HighCardMod()
                 end
                 if context.repetition then
                     if context.cardarea == G.play and context.other_card == hcm_get_lowest_value(context.scoring_hand) and not self.ability.extra.repeated then
-                        sendDebugMessage("Agent S triggered!")
+                        if debugging then sendDebugMessage("Agent S triggered!") end
                         self.ability.extra.repeated = true
                         return {
                             message = G.localization.descriptions["Joker"]["j_hcm_agent_s"]["card_eval"],
@@ -1788,7 +1787,7 @@ function SMODS.INIT.HighCardMod()
                 end
                 if context.destroying_card then 
                     if not self.ability.extra.faceless_trigger then return nil end
-                    sendInfoMessage("Destroying card!")
+                    if debugging then sendInfoMessage("Destroying card!") end
                     self.ability.extra.insert_pos = self.ability.extra.insert_pos + 1
                     if self.ability.extra.insert_pos == self.ability.extra.delete_pos then 
                         self.ability.extra.faceless_trigger = false
@@ -2045,7 +2044,7 @@ function SMODS.INIT.HighCardMod()
                 end
                 if context.before then 
                     for k, v in pairs(G.GAME.probabilities) do 
-                        sendDebugMessage(G.GAME.probabilities[k])
+                        if debugging then sendDebugMessage(G.GAME.probabilities[k]) end
                         G.GAME.probabilities[k] = v * 1000
                     end
                     return {
@@ -2055,7 +2054,7 @@ function SMODS.INIT.HighCardMod()
                 end
                 if context.after then 
                     for k, v in pairs(G.GAME.probabilities) do 
-                        sendDebugMessage(G.GAME.probabilities[k])
+                        if debugging then sendDebugMessage(G.GAME.probabilities[k]) end
                         G.GAME.probabilities[k] = v / 1000
                     end
                 end
@@ -2148,7 +2147,7 @@ function SMODS.INIT.HighCardMod()
                 end
                 if context.repetition then
                     if context.cardarea == G.play and #context.full_hand == self.ability.extra.required_cnt and not self.ability.extra.repeated then
-                        sendInfoMessage("Dynamic Kinesis triggered!")
+                        if debugging then sendInfoMessage("Dynamic Kinesis triggered!") end
                         self.ability.extra.repeated = true
                         card_eval_status_text(self, 'extra', nil, nil, nil, {message = G.localization.descriptions["Joker"]["j_hcm_dynamic_kinesis"]["card_eval"]})
                         return {
@@ -2294,7 +2293,7 @@ function SMODS.INIT.HighCardMod()
                 	end
                 	current_average = current_average / rank_cnt
              		self.ability.extra.current_average = current_average
-             		sendInfoMessage("average is "..current_average)
+             		if debugging then sendInfoMessage("average is "..current_average) end
                 end
 
                 if context.individual then
@@ -2511,7 +2510,7 @@ function SMODS.INIT.HighCardMod()
                   		if enhancement == nil then satisfied = false end
                     	if satisfied then 
                     		card_eval_status_text(self, 'extra', nil, nil, nil, {message = G.localization.descriptions["Joker"]["j_hcm_life_binder"]["card_eval"]})
-							sendInfoMessage("Life Binder Generation Process!")
+							if debugging then sendInfoMessage("Life Binder Generation Process!") end
 							G.playing_card = (G.playing_card and G.playing_card + 1) or 1
 						    
 						    local fake_card = Card(G.play.T.x + G.play.T.w/2, G.play.T.y, G.CARD_W, G.CARD_H, G.P_CARDS['H_A'], G.P_CENTERS['c_base'], {playing_card = G.playing_card})
@@ -2651,7 +2650,7 @@ function Card:calculate_seal(context)
 	if context.discard then
 		for _, jkr in pairs(G.jokers.cards) do
 			if jkr.ability.name == 'HCM Wing Wind' then
-				--sendInfoMessage("Discard WW")
+				--if debugging then sendInfoMessage("Discard WW") end
 				local hcm_triggered = hcm_wing_wind_bundle(self, 'Purple', jkr)
 				--if hcm_triggered then card_eval_status_text(jkr, 'extra', nil, nil, nil, {message = G.localization.descriptions["Joker"]["j_hcm_wing_wind"]["card_eval"]}) end
 			end
@@ -2755,7 +2754,7 @@ function evaluate_poker_hand(hand)
 		        ["High Card"] = {},
 		        top = result.top
 		      }
-            --sendInfoMessage("Straight Effect Dominates! ")
+            --if debugging then sendInfoMessage("Straight Effect Dominates! ") end
             return new_results
         elseif jkr.ability.name == 'HCM Jelly Crawler' then 
         	local suits = {}
@@ -2854,7 +2853,7 @@ function evaluate_poker_hand(hand)
 		    if not next(new_results["Pair"]) then 
 		    	new_results["Pair"] = result.top 
 		    end
-		    --sendInfoMessage("Pair Effect Dominates! ")
+		    --if debugging then sendInfoMessage("Pair Effect Dominates! ") end
 		    return new_results
 		elseif jkr.ability.name == 'HCM Out of Five' then 
 		    local replacement = hcm_hand_most_played(false)
@@ -2882,7 +2881,7 @@ function evaluate_poker_hand(hand)
 		--[[
 		if jkr.ability.name == 'HCM The Zoo' then 
 			for _,v in ipairs(hand) do
-	            sendInfoMessage("Poker Info: "..v.base.suit..v:get_id())
+	            if debugging then sendInfoMessage("Poker Info: "..v.base.suit..v:get_id()) end
 	        end 
         end
         ]]--
@@ -3011,7 +3010,7 @@ function coming_home_draws(xcard)
     local hand_space = math.min(#G.deck.cards, G.hand.config.card_limit - #G.hand.cards + #G.hand.highlighted)
     local current_hand = G.hand.cards
     local current_deck = G.deck.cards
-    sendInfoMessage("Looking to draw: "..most_played_hand)
+    if debugging then sendInfoMessage("Looking to draw: "..most_played_hand) end
     local draw_outcome = false
     local cards_to_draw = nil
     if most_played_hand == "Flush Five" then
@@ -3042,7 +3041,7 @@ function coming_home_draws(xcard)
     if cards_to_draw and next(cards_to_draw) then 
     	card_eval_status_text(xcard, 'extra', nil, nil, nil, {message = G.localization.descriptions["Joker"]["j_hcm_coming_home"]["card_eval"]})
     	for k, v in ipairs(cards_to_draw) do
-    		sendInfoMessage("Draw Triggered! "..v.base.suit.." "..v:get_id())
+    		if debugging then sendInfoMessage("Draw Triggered! "..v.base.suit.." "..v:get_id()) end
     		draw_card(G.deck, G.hand, k*100/hand_space,'up', true, v)
     	end
     end
@@ -3242,7 +3241,7 @@ function hcm_draw_Full_House(card_deck, card_hand, hand_space)
 
     for i = 1, hand_space do
 	    for k, v in ipairs(card_deck) do
-	    	--sendInfoMessage("checking: "..v.base.suit..v:get_id())
+	    	--if debugging then sendInfoMessage("checking: "..v.base.suit..v:get_id()) end
 	    	if v.highlighted or v.config.center == G.P_CENTERS.m_stone then
 	    	elseif only_single[v:get_id()] or drawn[k] then 
 	        -- If we need a three of a kind and this card helps, 
@@ -3257,7 +3256,7 @@ function hcm_draw_Full_House(card_deck, card_hand, hand_space)
 	            hand_ranks[v:get_id()] = (hand_ranks[v:get_id()] or 0) + 1
 	            deck_ranks[v:get_id()] = (deck_ranks[v:get_id()] or 0) - 1
 	            if deck_ranks[v:get_id()] <= 0 then deck_ranks[v:get_id()] = nil end
-	            --sendInfoMessage("want to draw: "..v.base.suit..v:get_id())
+	            --if debugging then sendInfoMessage("want to draw: "..v.base.suit..v:get_id()) end
 	            satisfied, three, pair, single, onlypair, onlysingle = check_hand(hand_ranks, only_pair, only_single)
 	            if satisfied or #draws == hand_space then
 	                break
@@ -3342,7 +3341,7 @@ function hcm_draw_Flush_House(card_deck, card_hand, hand_space)
 
 	    for i = 1, hand_space do
 		    for k, v in ipairs(card_deck) do
-		    	--sendInfoMessage("checking: "..v.base.suit..v:get_id())
+		    	--if debugging then sendInfoMessage("checking: "..v.base.suit..v:get_id()) end
 		    	if v.highlighted or v.config.center == G.P_CENTERS.m_stone then
 		    	elseif v.base.suit ~= current_suit then
 		    	elseif only_single[v.base.suit][v:get_id()] or drawn[k] then 
@@ -3358,7 +3357,7 @@ function hcm_draw_Flush_House(card_deck, card_hand, hand_space)
 		            hand_ranks[v.base.suit][v:get_id()] = (hand_ranks[v.base.suit][v:get_id()] or 0) + 1
 		            deck_ranks[v.base.suit][v:get_id()] = (deck_ranks[v.base.suit][v:get_id()] or 0) - 1
 		            if deck_ranks[v.base.suit][v:get_id()] <= 0 then deck_ranks[v.base.suit][v:get_id()] = nil end
-		            --sendInfoMessage("want to draw: "..v.base.suit..v:get_id())
+		            --if debugging then sendInfoMessage("want to draw: "..v.base.suit..v:get_id()) end
 		            satisfied, three, pair, single, onlypair, onlysingle = check_hand(hand_ranks[v.base.suit], only_pair[v.base.suit], only_single[v.base.suit])
 		            if satisfied or #draws == hand_space then
 		                break
@@ -3569,23 +3568,23 @@ function hcm_draw_Straight(card_deck, card_hand, hand_space)
         	local current_rank = start_rank
         	local chain_checked = 0
         	local draws = {}
-        	--sendInfoMessage("Checking "..start_rank)
+        	--if debugging then sendInfoMessage("Checking "..start_rank) end
             while chain_checked < chain_req and current_rank < 15 do
-            	--sendInfoMessage("Then checking "..current_rank)
+            	--if debugging then sendInfoMessage("Then checking "..current_rank) end
                 if not ranks[current_rank] then
                     if shortcut and not gapped and current_rank ~= start_rank then
                         gapped = true 
                         current_rank = current_rank + 1
-                        --sendInfoMessage("Gapped!")
+                        --if debugging then sendInfoMessage("Gapped!") end
                     else
-                    	sendInfoMessage("Nope!")
+                    	if debugging then sendInfoMessage("Nope!") end
                         chain_exist = false
                         break
                     end
                 else 
-                	--sendInfoMessage("needed! ")
+                	--if debugging then sendInfoMessage("needed! ") end
                 	if not hand_cond[current_rank] then 
-                		--sendInfoMessage("We don't have it yet! draw! ")
+                		--if debugging then sendInfoMessage("We don't have it yet! draw! ") end
                 		draw_needed = draw_needed + 1 
                 		table.insert(draws, (current_rank == 1 and 14 or current_rank))
                 	end
@@ -3597,7 +3596,7 @@ function hcm_draw_Straight(card_deck, card_hand, hand_space)
             end
             if chain_checked < chain_req or not chain_exist then 
             elseif draw_needed <= hand_space then
-            	--sendInfoMessage("FOUND!")
+            	--if debugging then sendInfoMessage("FOUND!") end
             	--for k, v in ipairs(draws) do sendInfoMessage("draw "..v) end
                 return true, draws
             end
@@ -3675,23 +3674,23 @@ function hcm_draw_Straight_Flush(card_deck, card_hand, hand_space)
         	local current_rank = start_rank
         	local chain_checked = 0
         	local draws = {}
-        	--sendInfoMessage("Checking "..start_rank)
+        	--if debugging then sendInfoMessage("Checking "..start_rank) end
             while chain_checked < chain_req and current_rank < 15 do
-            	--sendInfoMessage("Then checking "..current_rank)
+            	--if debugging then sendInfoMessage("Then checking "..current_rank) end
                 if not ranks[current_rank] then
                     if shortcut and not gapped and current_rank ~= start_rank then
                         gapped = true 
                         current_rank = current_rank + 1
-                        --sendInfoMessage("Gapped!")
+                        --if debugging then sendInfoMessage("Gapped!") end
                     else
-                    	--sendInfoMessage("Nope!")
+                    	--if debugging then sendInfoMessage("Nope!") end
                         chain_exist = false
                         break
                     end
                 else 
-                	--sendInfoMessage("needed! ")
+                	--if debugging then sendInfoMessage("needed! ") end
                 	if not hand_cond[current_rank] then 
-                		--sendInfoMessage("We don't have it yet! draw! ")
+                		--if debugging then sendInfoMessage("We don't have it yet! draw! ") end
                 		draw_needed = draw_needed + 1 
                 		table.insert(draws, (current_rank == 1 and 14 or current_rank))
                 	end
@@ -3703,7 +3702,7 @@ function hcm_draw_Straight_Flush(card_deck, card_hand, hand_space)
             end
             if chain_checked < chain_req or not chain_exist then 
             elseif draw_needed <= hand_space then
-            	--sendInfoMessage("FOUND!")
+            	--if debugging then sendInfoMessage("FOUND!") end
             	--for k, v in ipairs(draws) do sendInfoMessage("draw "..v) end
                 return true, draws
             end
@@ -3745,8 +3744,8 @@ local evaluate_play_OG = G.FUNCS.evaluate_play
 function G.FUNCS.evaluate_play(self, e)
 	for _, jkr in pairs(G.jokers.cards) do
 		if jkr.ability.name == 'HCM The Zoo' then
-			--sendInfoMessage("eval play zoo!")
-			--sendInfoMessage(#G.play.cards)
+			--if debugging then sendInfoMessage("eval play zoo!") end
+			--if debugging then sendInfoMessage(#G.play.cards) end
 			local text,disp_text,poker_hands,scoring_hand,non_loc_disp_text = G.FUNCS.get_poker_hand_info(G.play.cards)
             jkr.ability.extra.transfer_card = scoring_hand[1]
         	if #scoring_hand > 1 then
@@ -3795,9 +3794,9 @@ function G.FUNCS.evaluate_play(self, e)
             end
 		end 
 	end
-	sendInfoMessage("Actual Eval Play")
+	if debugging then sendInfoMessage("Actual Eval Play") end
 	result = evaluate_play_OG(self, e)
-	sendInfoMessage("Done!")
+	if debugging then sendInfoMessage("Done!") end
 	for _, card in pairs(G.play.cards) do
 		local is_debuffed = false 
 		if card.debuff then is_debuffed = true end
@@ -3814,17 +3813,17 @@ function G.FUNCS.evaluate_play(self, e)
 				if text == "High Card" and highcard == card then
 		        	if card.config.center == G.P_CENTERS.m_stone then return result end
 		        	local xcard_name = hcm_determine_xplaying_key(card)
-		        	sendInfoMessage(xcard_name)
+		        	if debugging then sendInfoMessage(xcard_name) end
 		        	if G.GAME.hcm_disabled and G.GAME.hcm_disabled[card.xability.handname] then 
-						sendInfoMessage("disabled!")
+						if debugging then sendInfoMessage("disabled!") end
 						hcm_san_galgano_dialogue(nil, "disabled")
 					elseif xplaying_config[xcard_name] then
 		        		xplay(xcard_name, card)
 		        		G.GAME.hcm_held = copy_card(card)
-		        		--sendInfoMessage("Copied "..G.GAME.hcm_held.base.suit..G.GAME.hcm_held:get_id())
+		        		--if debugging then sendInfoMessage("Copied "..G.GAME.hcm_held.base.suit..G.GAME.hcm_held:get_id()) end
 		        		G.GAME.hcm_held:remove_from_area()
 		        		G.GAME.hcm_held.states.visible = false
-		        		--sendInfoMessage("Copied "..G.GAME.hcm_held.base.suit..G.GAME.hcm_held:get_id())
+		        		--if debugging then sendInfoMessage("Copied "..G.GAME.hcm_held.base.suit..G.GAME.hcm_held:get_id()) end
 		        		card.destroyed = true
 		        		G.E_MANAGER:add_event(Event({
 			        		func = function()
@@ -3845,7 +3844,7 @@ end
 local play_cards_from_highlighted_OG = G.FUNCS.play_cards_from_highlighted
 
 G.FUNCS.play_cards_from_highlighted = function(e)
-	sendInfoMessage("Play cards from highlighted!")
+	if debugging then sendInfoMessage("Play cards from highlighted!") end
 	for _, jkr in pairs(G.jokers.cards) do
 		if jkr.ability.name == 'HCM San Galgano' then
 			local text,disp_text,poker_hands,scoring_hand,non_loc_disp_text = G.FUNCS.get_poker_hand_info(G.hand.highlighted)
@@ -3878,7 +3877,7 @@ G.FUNCS.play_cards_from_highlighted = function(e)
 			end
 		end
 		if jkr.ability.name == 'HCM Staff Master' then
-			sendInfoMessage("Staff Master Generation Process!")
+			if debugging then sendInfoMessage("Staff Master Generation Process!") end
 			if #G.hand.highlighted <= 2 then return play_cards_from_highlighted_OG() end
 			local suits = {
 				Hearts=0, 
@@ -3953,7 +3952,7 @@ G.FUNCS.play_cards_from_highlighted = function(e)
 		    end
 		end
 		if jkr.ability.name == 'HCM Faceless' then
-			sendInfoMessage("Faceless Generation Process!")
+			if debugging then sendInfoMessage("Faceless Generation Process!") end
 			jkr.ability.extra.faceless_trigger = false
 			if #G.hand.highlighted > 4 then return play_cards_from_highlighted_OG() end
 			local suits = {"Hearts", "Diamonds", "Clubs", "Spades"}
@@ -4000,8 +3999,8 @@ G.FUNCS.play_cards_from_highlighted = function(e)
 
 			if best_suit == nil or best_rank == nil then return play_cards_from_highlighted_OG() end
 
-			sendInfoMessage("Best Match: " .. best_hand)
-			sendInfoMessage("Inserting " .. best_rank .." of ".. best_suit)
+			if debugging then sendInfoMessage("Best Match: " .. best_hand) end
+			if debugging then sendInfoMessage("Inserting " .. best_rank .." of ".. best_suit) end
 
 			jkr.ability.extra.faceless_trigger = true
 			G.playing_card = (G.playing_card and G.playing_card + 1) or 1
@@ -4033,7 +4032,7 @@ G.FUNCS.play_cards_from_highlighted = function(e)
 		    card_eval_status_text(fake_card, 'extra', nil, nil, nil, {message = G.localization.descriptions["Joker"]["j_hcm_faceless"]["card_eval"]})
 		end
 		if jkr.ability.name == 'HCM Musical Alchemist' then
-			sendInfoMessage("Musical Alchemist Generation Process!")
+			if debugging then sendInfoMessage("Musical Alchemist Generation Process!") end
 			if #G.hand.highlighted ~= 4 then return play_cards_from_highlighted_OG() end
 			local suits = {"Hearts", "Diamonds", "Clubs", "Spades"}
 		    local ranks = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}
@@ -4081,7 +4080,7 @@ G.FUNCS.play_cards_from_highlighted = function(e)
 			end
 		end
 		if jkr.ability.name == 'HCM Juggling Gun' then
-			sendInfoMessage("Juggling Gun!")
+			if debugging then sendInfoMessage("Juggling Gun!") end
 			local lowest_unhighlighted_card = nil
 			local lowest_card_value = nil
 			for k, v in ipairs(G.hand.cards) do
@@ -4113,11 +4112,11 @@ end
 local update_draw_to_hand_OG = Game.update_draw_to_hand
 
 function Game:update_draw_to_hand(dt)
-	--sendInfoMessage("Update draw to hand!")
+	--if debugging then sendInfoMessage("Update draw to hand!") end
 	if hcm_has_sq then 
 		if hcm_sq and hcm_sq.ability.extra.bonus_hand then 
 			self.STATE = self.STATES.HAND_PLAYED
-			sendInfoMessage("state reverted!")
+			if debugging then sendInfoMessage("state reverted!") end
 			return true
 		end
 	end
@@ -4130,20 +4129,20 @@ function Game:update_new_round(dt)
 	if hcm_has_sq then 
 		if hcm_sq and hcm_sq.ability.extra.bonus_hand then 
 			self.STATE = self.STATES.HAND_PLAYED
-			sendInfoMessage("state reverted!")
+			if debugging then sendInfoMessage("state reverted!") end
 			return true
 		end
 	end
-	--sendInfoMessage("Leaked into new rounds!")
+	--if debugging then sendInfoMessage("Leaked into new rounds!") end
 	update_new_round_OG(self, dt)
 end
 
 local end_round_OG = end_round 
 function end_round()
-	sendInfoMessage("end round now!")
+	if debugging then sendInfoMessage("end round now!") end
 	if hcm_has_sq and hcm_sq and hcm_sq.ability.extra.indicator then 
 		hcm_sq.ability.extra.indicator = false 
-		sendInfoMessage("Actually, end of round skipped!")
+		if debugging then sendInfoMessage("Actually, end of round skipped!") end
 	else
 		end_round_OG()
 	end
@@ -4152,7 +4151,7 @@ end
 -- local update_hand_played_OG = Game.update_hand_played
 
 -- function Game:update_hand_played(dt)
--- 	--sendInfoMessage("Update Hand Played")
+-- 	--if debugging then sendInfoMessage("Update Hand Played") end
 --     if self.buttons then self.buttons:remove(); self.buttons = nil end
 --     if self.shop then self.shop:remove(); self.shop = nil end
 
@@ -4177,10 +4176,10 @@ end
 local draw_from_deck_to_hand_OG = G.FUNCS.draw_from_deck_to_hand
 
 G.FUNCS.draw_from_deck_to_hand = function(e)
-	--sendInfoMessage("draw cards now!")
+	--if debugging then sendInfoMessage("draw cards now!") end
 	if hcm_has_sq and hcm_sq and hcm_sq.ability.extra.indicator then 
 		hcm_sq.ability.extra.indicator = false 
-		--sendInfoMessage("Actually, skipped!")
+		--if debugging then sendInfoMessage("Actually, skipped!") end
 	else
 		return draw_from_deck_to_hand_OG(e)
 	end
@@ -4192,21 +4191,21 @@ G.FUNCS.draw_from_play_to_discard = function(e)
 	draw_from_play_to_discard_OG()
 	for _, jkr in pairs(G.jokers.cards) do
 		if jkr.ability.name == 'HCM Typhoid Mary' then
-			sendInfoMessage("Typhoid Mary!")
+			if debugging then sendInfoMessage("Typhoid Mary!") end
 			if jkr.ability.extra.bonus_hand then
-				sendInfoMessage("Typhoid Mary Bonus Set!")
+				if debugging then sendInfoMessage("Typhoid Mary Bonus Set!") end
 				G.E_MANAGER:add_event(Event({
 			        trigger = 'before',
 			        func = function()
 			        	card_eval_status_text(jkr, 'extra', nil, nil, nil, {message = G.localization.descriptions["Joker"]["j_hcm_typhoid_mary"]["card_eval"]})
-						sendInfoMessage("Typhoid Mary Bonus Triggered!")
+						if debugging then sendInfoMessage("Typhoid Mary Bonus Triggered!") end
 			        	G.E_MANAGER:add_event(Event({
 		                    trigger = 'before',
 		                    func = function()
 		                        for k, v in ipairs(jkr.ability.extra.highlighted_cards) do
 					        		draw_card(G.discard, G.hand, k*100/#jkr.ability.extra.highlighted_cards,'up', nil ,v, 0.005, k%2==0, nil, math.max((21-k)/20,0.7))
 					        	end
-					        	sendInfoMessage(#jkr.ability.extra.highlighted_cards)
+					        	if debugging then sendInfoMessage(#jkr.ability.extra.highlighted_cards) end
 					        	return true
 		                    end
 		                }))
@@ -4217,14 +4216,14 @@ G.FUNCS.draw_from_play_to_discard = function(e)
 		                        for k, v in ipairs(jkr.ability.extra.highlighted_cards) do
 									table.insert(G.hand.highlighted, v)
 								end
-								sendInfoMessage(#G.hand.highlighted)
+								if debugging then sendInfoMessage(#G.hand.highlighted) end
 					        	return true
 		                    end
 		                }))
 		             	G.E_MANAGER:add_event(Event({
 		                    trigger = 'immediate',
 		                    func = function()
-		                    	sendInfoMessage("Time to play")
+		                    	if debugging then sendInfoMessage("Time to play") end
 		                        ease_hands_played(1)
 		                        G.FUNCS.play_cards_from_highlighted(e)
 					        	return true
@@ -4241,7 +4240,7 @@ G.FUNCS.draw_from_play_to_discard = function(e)
     --draw_from_play_to_discard_OG()
 	for _, jkr in pairs(G.jokers.cards) do
     	if jkr.ability.name == 'HCM Punker Viper' then
-			sendInfoMessage("Punker Viper!")
+			if debugging then sendInfoMessage("Punker Viper!") end
 		    card_eval_status_text(jkr, 'extra', nil, nil, nil, {message = G.localization.descriptions["Joker"]["j_hcm_punker_viper"]["card_eval"]})
             G.FUNCS.draw_from_discard_to_deck(e)
 		end
@@ -4256,7 +4255,7 @@ G.FUNCS.flame_handler = function(e)
 		if jkr.ability.name == 'HCM Lethal Scoville' then
 			if not hcm_flamed then
 				if G.ARGS.score_intensity.earned_score >= G.ARGS.score_intensity.required_score and G.ARGS.score_intensity.required_score > 0 then
-			    	sendInfoMessage("Play for the Fire!")
+			    	if debugging then sendInfoMessage("Play for the Fire!") end
 			    	if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
 			            G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
 			            G.E_MANAGER:add_event(Event({
@@ -4372,9 +4371,9 @@ function Back:trigger_effect(args)
 	if args.context == 'final_scoring_step' and roundandround and self.name ~= 'Plasma Deck' then
 		local new_args = {context = 'final_scoring_step', chips = args.chips, mult = args.mult}	
 		local result1, result2 = back_trigger_effect_OG(self, args)
-		sendInfoMessage("Checking Round and Round!")
+		if debugging then sendInfoMessage("Checking Round and Round!") end
 		if rnr_jkr.ability.extra.required_sat and args.context == 'final_scoring_step' then
-	        sendInfoMessage("Round and Round!")
+	        if debugging then sendInfoMessage("Round and Round!") end
 	        local tot = new_args.chips + new_args.mult
 	        new_args.chips = math.floor(tot/2)
 	        new_args.mult = math.floor(tot/2)
@@ -4419,7 +4418,7 @@ function Back:trigger_effect(args)
 	        }))
 
 	        delay(0.6)
-	        --sendInfoMessage("The score should be: "..(new_args.chips * new_args.mult))
+	        --if debugging then sendInfoMessage("The score should be: "..(new_args.chips * new_args.mult)) end
 	        --return args.chips, args.mult
 			if result1 ~= nil then 
 				return result1, result2 
@@ -4427,7 +4426,7 @@ function Back:trigger_effect(args)
 	        return new_args.chips, new_args.mult
 	        
 	    end
-		--sendInfoMessage("The args should be: "..new_args.chips.." / "..new_args.mult)
+		--if debugging then sendInfoMessage("The args should be: "..new_args.chips.." / "..new_args.mult) end
 		
 	end
 
@@ -4440,7 +4439,7 @@ local deck_info_OG = G.UIDEF.deck_info
 function G.UIDEF.deck_info(_show_remaining)
 
 	if G.GAME.hcm_balor then
-		sendInfoMessage("Balor!")
+		if debugging then sendInfoMessage("Balor!") end
 
 	  	return create_UIBox_generic_options({contents ={create_tabs(
 		    {tabs = _show_remaining and {
