@@ -43,4 +43,4 @@ You can discover their amazing abilities in collection tab once you install the 
 
 Feel free to reach out in the modding chat of [Balatro official discord](https://discord.com/invite/balatro)! 
 
-My IGN is **Kenny Stone**, any feedback is welcomed! 
+The original author's IGN is **Kenny Stone**.
