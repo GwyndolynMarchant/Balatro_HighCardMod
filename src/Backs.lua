@@ -16,10 +16,12 @@ SMODS.Back {
 	apply = function(self)
 		G.E_MANAGER:add_event(Event({
 			func = function()
+				for i = 1, 32 do table.remove(G.playing_cards) end
                 for _, card in ipairs(G.playing_cards) do
 					card:set_base(G.P_CARDS["C_K"])
 					card:set_x_playing(hcm_determine_xplaying_key(card))
 				end
+
 				return true
 			end
 		}))
