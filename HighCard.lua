@@ -118,15 +118,7 @@ local x_playing_loc = {
 		{{"of the round scores", G.C.UI.TEXT_DARK}},
 		{{"this as ", G.C.UI.TEXT_DARK}, {"High Card,", G.C.FILTER}},
         {{"transform to its joker!", G.C.UI.TEXT_DARK}},
-    }, 
-    --[[
-	text_clear = {
-		"If your {C:attention}first hand{}",
-		"of the round is",
-		"{C:attention}High Card{} of this,",
-        "{C:red}PLAY{} this X-Playing Card!",
-    }, 
-    ]]--
+    },
 }
 
 local hcm_misc_loc = {
@@ -174,34 +166,6 @@ function hcm_deep_cpy(original)
     return copy
 end
 
--- Initialize deck effect
-local Backapply_to_runRef = Back.apply_to_run
-function Back.apply_to_run(arg_56_0)
-    Backapply_to_runRef(arg_56_0)
-
-    -- High Card Deck
-    if arg_56_0.effect.config.XPlayingDeck then
-        G.E_MANAGER:add_event(Event({
-            func = function()
-            	-- Loop over all cards
-                for i = #G.playing_cards, 1, -1 do
-                    -- Convert all to xplaying cards
-                    local xkey = hcm_determine_xplaying_key(G.playing_cards[i])
-                    if x_sprite_info[xkey] and xplaying_config[xkey] then
-                        G.playing_cards[i]:set_x_playing(xkey)
-                    end
-                end
-                -- Add X-playing Joker
-                local card = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_hcm_xplay', nil)
-                card:set_edition(nil, nil, true)
-                card:add_to_deck()
-                G.jokers:emplace(card)
-                return true
-            end
-        }))
-    end
-end
-
 function hcm_san_galgano_dialogue(jkr, cmd)
 	if cmd == nil then return false end
 	local command_map = {
@@ -239,7 +203,7 @@ end
 
 local get_badge_colour_OG = get_badge_colour
 
-function get_badge_colour(key)
+function get_badge_colour(key) -- TODO: Find a better way to hook the badge colour into things
     if key == "xplaying" then return hcm_colour end
     return get_badge_colour_OG(key)
 end
@@ -264,8 +228,6 @@ function G.UIDEF.card_h_popup(card)
 			   card.ability_UIBox_table.name then
 			   	if debugging then sendInfoMessage("Changed!") end
 			   	card.ability_UIBox_table.name = localize{type = 'name', set = 'Other', key = "p_lowlight_normal", nodes = card.ability_UIBox_table.name}
-			   	--card.ability_UIBox_table.name[1].config.object.string = hcm_lowlight_loc.name
-			   	
 			end
 			if card.ability_UIBox_table and 
 			   card.ability_UIBox_table.main then 
@@ -324,7 +286,6 @@ function G.UIDEF.card_h_popup(card)
 			card.ability_UIBox_table.name[#card.ability_UIBox_table.name].config.text = card.xability.name
 			local xcolour = hcm_determine_xplaying_colour(card)
 			if xcolour then card.ability_UIBox_table.name[#card.ability_UIBox_table.name].config.colour = xcolour end
-			--sendNestedMessage(card.ability_UIBox_table.name[#card.ability_UIBox_table.name].config.colour)
 			local xcard_name = hcm_determine_xplaying_key(card)
 
 			-- Joker info
@@ -344,7 +305,6 @@ function G.UIDEF.card_h_popup(card)
 			-- Maybe I can call localize to return the description instead of grabbing it manually?
 
 			if xcard_name == "XPlayingHeartK" then 
-				sendNestedMessage(card.ability_UIBox_table.main)
 				if debugging then sendInfoMessage(#card.ability_UIBox_table.main) end
 				if card.ability and card.ability.perma_mult and not card.debuff then
 					local extra_mult = hcm_deep_cpy(card.ability_UIBox_table.main[1])
@@ -691,6 +651,7 @@ function hcm_id_to_rank(card_id)
 	return letter
 end
 
+-- TODO: Replace with standardized call?
 function hcm_hand_most_played(with_highcard)
 	local wo_hc = true
 	if with_highcard then wo_hc = false end
@@ -708,6 +669,7 @@ function hcm_hand_most_played(with_highcard)
     return most_played_hand
 end
 
+-- TODO: Replace with standardized call?
 function hcm_get_lowest_value(hand)
     local lowest = nil
     for k, v in ipairs(hand) do
@@ -2739,6 +2701,7 @@ function evaluate_poker_hand(hand)
 			end
 		end
 		if jkr.ability.name == 'HCM Green Green' then
+			-- TODO: Refactor into a standardized list of hands
             new_results = {
 		        ["Flush Five"] = {},
 		        ["Flush House"] = {},
@@ -2878,22 +2841,8 @@ function evaluate_poker_hand(hand)
 		    end   
 		    return new_results
 		end
-		--[[
-		if jkr.ability.name == 'HCM The Zoo' then 
-			for _,v in ipairs(hand) do
-	            if debugging then sendInfoMessage("Poker Info: "..v.base.suit..v:get_id()) end
-	        end 
-        end
-        ]]--
 	end
 	return new_results
-end
-
-local get_chip_mult_OG = Card.get_chip_mult
-
-function Card:get_chip_mult()
-    local mult_value = get_chip_mult_OG(self)
-    return mult_value + (self.ability.perma_mult or 0)
 end
 
 local sell_card_OG = Card.sell_card
@@ -2909,9 +2858,6 @@ function Card:sell_card()
 		    	ease_background_colour{new_colour = G.C.RED, contrast = 3}
 		    	local consume_type = self.ability.set
 		    	local key_append_extra = nil
-		    	--if consume_type == 'Tarot' then key_append_extra = 'emp'
-		    	--elseif consume_type == 'Planet' then key_append_extra = 'pri'
-		    	--else end
 				G.CONTROLLER.locks.selling_card = true
 			    stop_use()
 			    G.CONTROLLER:save_cardarea_focus(aof)
@@ -2998,11 +2944,6 @@ function copy_card(other, new_card, card_scale, playing_card, strip_edition)
     local new_card = copy_card_OG(other, new_card, card_scale, playing_card, strip_edition)
     if other.xability then new_card:set_x_playing(hcm_determine_xplaying_key(other)) end
     return new_card
-end
-
-local draw_card_OG = draw_card
-function draw_card(from, to, percent, dir, sort, card, delay, mute, stay_flipped, vol, discarded_only)
-	draw_card_OG(from, to, percent, dir, sort, card, delay, mute, stay_flipped, vol, discarded_only)
 end
 
 function coming_home_draws(xcard)
@@ -3842,7 +3783,6 @@ function G.FUNCS.evaluate_play(self, e)
 end
 
 local play_cards_from_highlighted_OG = G.FUNCS.play_cards_from_highlighted
-
 G.FUNCS.play_cards_from_highlighted = function(e)
 	if debugging then sendInfoMessage("Play cards from highlighted!") end
 	for _, jkr in pairs(G.jokers.cards) do
@@ -4110,7 +4050,6 @@ G.FUNCS.play_cards_from_highlighted = function(e)
 end
 
 local update_draw_to_hand_OG = Game.update_draw_to_hand
-
 function Game:update_draw_to_hand(dt)
 	--if debugging then sendInfoMessage("Update draw to hand!") end
 	if hcm_has_sq then 
@@ -4124,7 +4063,6 @@ function Game:update_draw_to_hand(dt)
 end
 
 local update_new_round_OG = Game.update_new_round
-
 function Game:update_new_round(dt)
 	if hcm_has_sq then 
 		if hcm_sq and hcm_sq.ability.extra.bonus_hand then 
@@ -4174,7 +4112,6 @@ end
 
 
 local draw_from_deck_to_hand_OG = G.FUNCS.draw_from_deck_to_hand
-
 G.FUNCS.draw_from_deck_to_hand = function(e)
 	--if debugging then sendInfoMessage("draw cards now!") end
 	if hcm_has_sq and hcm_sq and hcm_sq.ability.extra.indicator then 
@@ -4186,7 +4123,6 @@ G.FUNCS.draw_from_deck_to_hand = function(e)
 end
 
 local draw_from_play_to_discard_OG = G.FUNCS.draw_from_play_to_discard
-
 G.FUNCS.draw_from_play_to_discard = function(e)
 	draw_from_play_to_discard_OG()
 	for _, jkr in pairs(G.jokers.cards) do
@@ -4763,125 +4699,6 @@ function create_UIBox_xplaying_pack()
     	}}
   	}}
   	return t
-end
-
--- This is an important replacement that handles a piece of faulty code in OG game
-function Card:set_edition(edition, immediate, silent)
-    self.edition = nil
-    if not edition then return end
-    if edition.holo then
-        if not self.edition then self.edition = {} end
-        self.edition.mult = G.P_CENTERS.e_holo.config.extra
-        self.edition.holo = true
-        self.edition.type = 'holo'
-    elseif edition.foil then
-        if not self.edition then self.edition = {} end
-        self.edition.chips = G.P_CENTERS.e_foil.config.extra
-        self.edition.foil = true
-        self.edition.type = 'foil'
-    elseif edition.polychrome then
-        if not self.edition then self.edition = {} end
-        self.edition.x_mult = G.P_CENTERS.e_polychrome.config.extra
-        self.edition.polychrome = true
-        self.edition.type = 'polychrome'
-    elseif edition.negative then
-        if not self.edition then
-            self.edition = {}
-            if self.added_to_deck then --Need to override if adding negative to an existing joker
-                if self.ability.consumeable then
-                    G.consumeables.config.card_limit = G.consumeables.config.card_limit + 1
-                else
-                    G.jokers.config.card_limit = G.jokers.config.card_limit + 1
-                end
-            end
-        end
-        self.edition.negative = true
-        self.edition.type = 'negative'
-    end
-
-    if self.area and self.area == G.jokers then 
-        if self.edition then
-            if not G.P_CENTERS['e_'..(self.edition.type)].discovered then 
-                discover_card(G.P_CENTERS['e_'..(self.edition.type)])
-            end
-        else
-            if not G.P_CENTERS['e_base'].discovered then 
-                discover_card(G.P_CENTERS['e_base'])
-            end
-        end
-    end
-
-    if self.edition and not silent then
-        G.CONTROLLER.locks.edition = true
-        G.E_MANAGER:add_event(Event({
-            trigger = 'after',
-            delay = not immediate and 0.2 or 0,
-            blockable = not immediate,
-            func = function()
-                self:juice_up(1, 0.5)
-                if self.edition and self.edition.foil then play_sound('foil1', 1.2, 0.4) end
-                if self.edition and self.edition.holo then play_sound('holo1', 1.2*1.58, 0.4) end
-                if self.edition and self.edition.polychrome then play_sound('polychrome1', 1.2, 0.7) end
-                if self.edition and self.edition.negative then play_sound('negative', 1.5, 0.4) end
-               return true
-            end
-          }))
-          G.E_MANAGER:add_event(Event({
-            trigger = 'after',
-            delay = 0.1,
-            func = function()
-                G.CONTROLLER.locks.edition = false
-               return true
-            end
-          }))
-    end
-
-    if G.jokers and self.area == G.jokers then 
-        check_for_unlock({type = 'modify_jokers'})
-    end
-
-    self:set_cost()
-end
-
-
-
-function sendNestedMessage(message, logger)
-    if client then
-        level = "INFO "
-        logger = logger or "DefaultLogger"
-        message = message or "Default log message"
-        message = tableToString(message)
-        -- naive way to separate the logs if the console receive multiple logs at the same time
-        client:send(os.date('%Y-%m-%d %H:%M:%S') .. " :: " .. level .. " :: " .. logger .. " :: " .. message .. "ENDOFLOG")
-    end
-end
-
-function tableToString(t, seen, depth)
-	local hdepth = depth
-	if not depth then hdepth = 0 end
-    if type(t) ~= "table" then
-        return tostring(t)
-    end
-    
-    seen = seen or {}
-    if seen[t] then
-        return "..."  -- Handle cyclic references
-    end
-    seen[t] = true
-
-    local parts = {}
-    for key, value in pairs(t) do
-        local keyString = tostring(key)
-        local valueString
-        if type(value) == "table" then
-        	if hdepth > 5 then valueString = "[TABLE: "..key.."]"
-            else valueString = tableToString(value, nil, hdepth + 1) end
-        else
-            valueString = tostring(value)
-        end
-        table.insert(parts, keyString .. "=" .. valueString)
-    end
-    return "{" .. table.concat(parts, ", ") .. "}"
 end
 
 ----------------------------------------------
